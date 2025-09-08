@@ -2,6 +2,8 @@
 import GoogleProvider from "next-auth/providers/google";
 import { NextAuthOptions } from "next-auth";
 import { getServerSession } from "next-auth/next";
+import { Session, User } from "next-auth";
+import { JWT } from "next-auth/jwt";
 
 /**
  * Replace these emails with your coaches' emails.
@@ -19,7 +21,7 @@ export const authOptions: NextAuthOptions = {
 
   // Restrict sign-in if you want only specific emails to be able to sign in
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, profile }) {
       // `user.email` or `profile.email` contains the Google email
       const email = (user?.email ?? profile?.email) as string | undefined;
       if (!email) return false;
@@ -36,15 +38,17 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
 
-    async session({ session, token }) {
-      // Attach role to session for easy checks on client/server
-      (session.user as any).role = (token as any).role ?? "user";
+    async session({ session, token }: { session: Session; token: JWT }) {
+      // Optionally attach extra fields
+      if (token?.sub) {
+        (session.user as User).id = token.sub;
+      }
       return session;
     },
   },
 
   secret: process.env.NEXTAUTH_SECRET,
 };
- 
+
 // Helper for server components / server routes
 export const getServerAuthSession = () => getServerSession(authOptions);

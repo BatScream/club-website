@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export default function Home() {
   return (
     <main className="h-screen w-full bg-gray-900 text-white flex items-center justify-center px-6">
