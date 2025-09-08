@@ -49,9 +49,6 @@ export default async function SessionsPage() {
             <Link href="/dashboard" className="inline-block px-3 py-2 rounded bg-white shadow hover:shadow-md">
               ← Dashboard
             </Link>
-            <Link href="/dashboard/sessions/create" className="inline-block px-4 py-2 rounded bg-blue-600 text-white">
-              + Create Session
-            </Link>
           </div>
         </header>
 

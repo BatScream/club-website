@@ -35,25 +35,25 @@ export default async function PlayersPage() {
   }));
 
   return (
-    <main className="min-h-screen bg-gray-100 p-6">
+    <main className="min-h-screen bg-gray-100 p-4 md:p-6">
       <div className="max-w-5xl mx-auto">
-        <header className="flex items-center justify-between mb-6">
+        <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
           <div>
-            <h1 className="text-2xl font-bold">Players</h1>
+            <h1 className="text-2xl font-bold leading-tight">Players</h1>
             <p className="text-sm text-gray-600">List of registered players in your academy.</p>
           </div>
 
           <div className="flex gap-3">
-            <Link href="/dashboard" className="inline-block px-3 py-2 rounded bg-white shadow hover:shadow-md">
+            <Link
+              href="/dashboard"
+              className="inline-block px-3 py-2 rounded bg-white shadow hover:shadow-md text-sm"
+            >
               ← Back to Dashboard
-            </Link>
-            <Link href="/dashboard/register-player" className="inline-block px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">
-              + Register Player
             </Link>
           </div>
         </header>
 
-        {/* Desktop/table view */}
+        {/* Table for md+ */}
         <div className="hidden md:block bg-white shadow rounded-lg overflow-x-auto">
           <table className="min-w-full text-left divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -64,10 +64,13 @@ export default async function PlayersPage() {
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Registered At</th>
               </tr>
             </thead>
+
             <tbody className="bg-white divide-y divide-gray-100">
               {players.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-gray-500">No players registered yet.</td>
+                  <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
+                    No players registered yet.
+                  </td>
                 </tr>
               ) : (
                 players.map((p) => (
@@ -75,7 +78,9 @@ export default async function PlayersPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{p.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{p.age}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{p.jersey}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.createdAt ? new Date(p.createdAt).toLocaleString() : "-"}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {p.createdAt ? new Date(p.createdAt).toLocaleString() : "-"}
+                    </td>
                   </tr>
                 ))
               )}
@@ -83,19 +88,22 @@ export default async function PlayersPage() {
           </table>
         </div>
 
-        {/* Mobile/cards view */}
+        {/* Card list for mobile */}
         <div className="md:hidden space-y-3">
-          {players.map((p) => (
-            <div key={p._id} className="bg-white shadow rounded-lg p-4">
-              <div className="flex items-center justify-between">
-                <div className="min-w-0">
-                  <div className="font-medium truncate">{p.name}</div>
-                  <div className="text-sm text-gray-500 truncate">Jersey: #{p.jersey} • Age: {p.age}</div>
+          {players.length === 0 ? (
+            <div className="bg-white shadow rounded-lg p-4 text-center text-gray-500">No players registered yet.</div>
+          ) : (
+            players.map((p) => (
+              <div key={p._id} className="bg-white shadow rounded-lg p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="font-medium text-base truncate">{p.name}</div>
+                    <div className="text-sm text-gray-500 truncate">Jersey: #{p.jersey} • Age: {p.age}</div>
+                  </div>
                 </div>
-                <div className="text-sm text-gray-500">{p.createdAt ? new Date(p.createdAt).toLocaleDateString() : ""}</div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </main>

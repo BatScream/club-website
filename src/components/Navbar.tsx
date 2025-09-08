@@ -2,10 +2,9 @@
 
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
-import Image from "next/image";
 
 export default function Navbar() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
 
   return (
     <nav className="w-full bg-gray-900 text-white px-6 py-4 flex justify-between items-center shadow-md">
@@ -17,7 +16,7 @@ export default function Navbar() {
       {/* Right side */}
       <div className="flex items-center gap-4">
         <Link href="/dashboard" className="hover:text-yellow-300">
-          Coach Dashboard
+          Dashboard
         </Link>
 
         {/* Loading spinner */}
@@ -28,16 +27,6 @@ export default function Navbar() {
         {/* Authenticated state */}
         {status === "authenticated" && (
           <div className="flex items-center gap-3">
-            {/* Profile picture */}
-            {session.user?.image && (
-              <Image
-                src={session.user.image}
-                alt={session.user.name || "Profile"}
-                width={32}
-                height={32}
-                className="rounded-full border border-yellow-400"
-              />
-            )}
             {/* Logout button */}
             <button
               onClick={() => signOut({ callbackUrl: "/" })}

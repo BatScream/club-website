@@ -4,7 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Remove any old custom CSS until Tailwind is working clean */
 html, body {
-  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
