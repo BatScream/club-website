@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function RegisterPlayerPage() {
   const router = useRouter();
@@ -21,7 +22,6 @@ export default function RegisterPlayerPage() {
 
     const data = await res.json();
     if (res.ok) {
-      // Redirect to dashboard with a query param so dashboard can show a toast
       router.push(`/dashboard?registered=1&name=${encodeURIComponent(name)}`);
     } else {
       setMessage("❌ " + (data.error || "Something went wrong"));
@@ -31,7 +31,16 @@ export default function RegisterPlayerPage() {
   return (
     <main className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-md mx-auto bg-white shadow rounded-xl p-6">
-        <h1 className="text-2xl font-bold mb-4">Register Player</h1>
+        {/* Header with Back link */}
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold">Register Player</h1>
+          <Link
+            href="/dashboard"
+            className="text-sm text-blue-600 underline hover:text-blue-800"
+          >
+            ← Back to Dashboard
+          </Link>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <input

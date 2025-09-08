@@ -1,21 +1,17 @@
 // models/player.ts
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { InferSchemaType } from "mongoose";
 
-export interface IPlayer extends Document {
-  name: string;
-  age: number;
-  jersey: number;
-  createdAt: Date;
-}
-
-const PlayerSchema = new Schema<IPlayer>({
+const PlayerSchema = new mongoose.Schema({
   name: { type: String, required: true },
   age: { type: Number, required: true },
   jersey: { type: Number, required: true },
   createdAt: { type: Date, default: Date.now },
 });
 
-// mongoose will map model 'Player' -> collection 'players'
+// export a type inferred from the schema
+export type PlayerType = InferSchemaType<typeof PlayerSchema>;
+
+// Create / reuse the model
 export const Player =
-  (mongoose.models.Player as mongoose.Model<IPlayer>) ||
-  mongoose.model<IPlayer>("Player", PlayerSchema);
+  (mongoose.models.Player as mongoose.Model<PlayerType>) ||
+  mongoose.model<PlayerType>("Player", PlayerSchema);
