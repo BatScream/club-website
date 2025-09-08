@@ -1,8 +1,9 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <main className="h-screen w-full bg-gray-900 text-white flex items-center justify-center px-6">
       <div className="max-w-6xl w-full grid md:grid-cols-2 gap-10 items-center">
-        
         {/* Academy Info */}
         <div className="space-y-6">
           <h1 className="text-4xl md:text-5xl font-extrabold text-yellow-400">

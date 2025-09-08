@@ -1,55 +1,64 @@
 "use client";
 
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
-
-const links = [
-  { name: "Home", href: "#home" },
-  { name: "About", href: "#about" },
-  { name: "Coaches", href: "#coaches" },
-  { name: "Contact", href: "#contact" },
-];
+import { useSession, signOut } from "next-auth/react";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function Navbar() {
-  const [open, setOpen] = useState(false);
+  const { data: session, status } = useSession();
 
   return (
-    <nav className="bg-[#A50044] fixed w-full top-0 z-50 shadow-lg">
-      <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
-        <h1 className="text-2xl font-bold">Revelation FA</h1>
-        <div className="hidden md:flex space-x-6">
-          {links.map((link) => (
-            <a
-              key={link.name}
-              href={link.href}
-              className="hover:text-[#FFED02] transition"
-            >
-              {link.name}
-            </a>
-          ))}
-        </div>
-        <button
-          className="md:hidden"
-          onClick={() => setOpen(!open)}
-        >
-          {open ? <X /> : <Menu />}
-        </button>
-      </div>
+    <nav className="w-full bg-gray-900 text-white px-6 py-4 flex justify-between items-center shadow-md">
+      {/* Left side - Academy name */}
+      <Link href="/" className="text-xl font-bold text-yellow-400">
+        Revelation Football Academy
+      </Link>
 
-      {open && (
-        <div className="md:hidden bg-[#181733] px-6 py-4 space-y-4">
-          {links.map((link) => (
-            <a
-              key={link.name}
-              href={link.href}
-              className="block hover:text-[#FFED02]"
-              onClick={() => setOpen(false)}
+      {/* Right side */}
+      <div className="flex items-center gap-4">
+        <Link href="/" className="hover:text-yellow-300">
+          Home
+        </Link>
+        <Link href="/dashboard" className="hover:text-yellow-300">
+          Coach Dashboard
+        </Link>
+
+        {/* Loading spinner */}
+        {status === "loading" && (
+          <div className="w-5 h-5 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+        )}
+
+        {/* Authenticated state */}
+        {status === "authenticated" && (
+          <div className="flex items-center gap-3">
+            {/* Profile picture */}
+            {session.user?.image && (
+              <Image
+                src={session.user.image}
+                alt={session.user.name || "Profile"}
+                width={32}
+                height={32}
+                className="rounded-full border border-yellow-400"
+              />
+            )}
+
+            {/* Name - hidden on small screens */}
+            <span className="hidden sm:inline text-sm font-medium text-gray-200">
+              {session.user?.name}
+            </span>
+
+            {/* Logout button */}
+            <button
+              onClick={() => signOut({ callbackUrl: "/" })}
+              className="bg-yellow-400 text-gray-900 px-4 py-2 rounded-lg font-semibold 
+                         hover:bg-yellow-300 hover:scale-105 active:scale-95 
+                         shadow-md transition-all"
             >
-              {link.name}
-            </a>
-          ))}
-        </div>
-      )}
+              Logout
+            </button>
+          </div>
+        )}
+      </div>
     </nav>
   );
 }

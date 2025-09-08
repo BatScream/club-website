@@ -1,9 +1,13 @@
 import "./globals.css";
-import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import Navbar from "@/components/Navbar";
+import Providers from "@/components/Providers";
 
-export const metadata: Metadata = {
+const inter = Inter({ subsets: ["latin"] });
+
+export const metadata = {
   title: "Revelation Football Academy",
-  description: "Official website of Revelation Football Academy, Urappakkam",
+  description: "Football academy website for Urappakkam, Chennai",
 };
 
 export default function RootLayout({
@@ -13,7 +17,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="antialiased">{children}</body>
+      <body className={inter.className}>
+        <Providers>
+          <Navbar />
+          {children}
+        </Providers>
+      </body>
     </html>
   );
 }
