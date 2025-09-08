@@ -16,9 +16,6 @@ export default function Navbar() {
 
       {/* Right side */}
       <div className="flex items-center gap-4">
-        <Link href="/" className="hover:text-yellow-300">
-          Home
-        </Link>
         <Link href="/dashboard" className="hover:text-yellow-300">
           Coach Dashboard
         </Link>
@@ -41,12 +38,6 @@ export default function Navbar() {
                 className="rounded-full border border-yellow-400"
               />
             )}
-
-            {/* Name - hidden on small screens */}
-            <span className="hidden sm:inline text-sm font-medium text-gray-200">
-              {session.user?.name}
-            </span>
-
             {/* Logout button */}
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
