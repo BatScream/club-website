@@ -12,8 +12,8 @@ type SessionCard = {
   date: string;
   name: string;
   attendeesCount: number;
+  attendees: string[];
   createdAt?: string | Date;
-  attendees: string[]; // player ids
 };
 
 export default async function SessionsPage() {
@@ -24,7 +24,6 @@ export default async function SessionsPage() {
 
   await connectDB();
 
-  // fetch total players to compute percentage
   const totalPlayers = await Player.countDocuments();
 
   const raw = await Session.find().sort({ date: -1 }).limit(200).lean().exec();
@@ -38,7 +37,7 @@ export default async function SessionsPage() {
   }));
 
   return (
-    <main className="min-h-screen bg-gray-100 p-8">
+    <main className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-4xl mx-auto">
         <header className="flex items-center justify-between mb-6">
           <div>
@@ -63,20 +62,20 @@ export default async function SessionsPage() {
             sessions.map((s) => {
               const pct = totalPlayers === 0 ? 0 : Math.round((s.attendeesCount / totalPlayers) * 100);
               return (
-                <div key={s._id} className="p-4 bg-white shadow rounded flex items-center justify-between">
+                <div key={s._id} className="p-4 bg-white shadow rounded flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
                     <div className="font-semibold">{s.name}</div>
                     <div className="text-sm text-gray-500">{new Date(s.date).toLocaleString()}</div>
                     <div className="text-sm text-gray-600 mt-2">{s.attendeesCount} present</div>
                   </div>
 
-                  <div className="flex items-center gap-4">
-                    <div className="text-right">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    <div className="text-center sm:text-right">
                       <div className="text-sm text-gray-500">Attendance</div>
                       <div className="font-bold text-lg">{pct}%</div>
                     </div>
 
-                    <Link href={`/dashboard/sessions/${s._id}`} className="px-3 py-1 bg-white border rounded shadow-sm text-sm">
+                    <Link href={`/dashboard/sessions/${s._id}`} className="px-3 py-2 bg-white border rounded text-sm w-full sm:w-auto text-center">
                       Edit
                     </Link>
                   </div>

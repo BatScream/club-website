@@ -11,7 +11,7 @@ type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 
 export default function LoadingButton({
   loading = false,
-  spinnerSize = 16,
+  spinnerSize = 18,
   children,
   disabled,
   className = "",
@@ -24,10 +24,7 @@ export default function LoadingButton({
       {...rest}
       disabled={isDisabled}
       aria-busy={loading}
-      className={
-        "inline-flex items-center justify-center gap-2 px-4 py-2 rounded focus:outline-none " +
-        className
-      }
+      className={`inline-flex items-center justify-center gap-2 rounded focus:outline-none ${className}`}
     >
       {loading && <LoadingSpinner size={spinnerSize} />}
       <span>{children}</span>

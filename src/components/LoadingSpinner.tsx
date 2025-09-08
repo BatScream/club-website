@@ -1,8 +1,7 @@
 // src/components/LoadingSpinner.tsx
 "use client";
 
-export default function LoadingSpinner({ size = 20 }: { size?: number }) {
-  // size in px
+export default function LoadingSpinner({ size = 18 }: { size?: number }) {
   const s = size;
   return (
     <svg
@@ -17,14 +16,14 @@ export default function LoadingSpinner({ size = 20 }: { size?: number }) {
         cy="12"
         r="10"
         stroke="currentColor"
-        strokeWidth="4"
+        strokeWidth="3"
         strokeOpacity="0.25"
         fill="none"
       />
       <path
         d="M4 12a8 8 0 018-8"
         stroke="currentColor"
-        strokeWidth="4"
+        strokeWidth="3"
         strokeLinecap="round"
         fill="none"
       />

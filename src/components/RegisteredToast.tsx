@@ -1,3 +1,4 @@
+// src/components/RegisteredToast.tsx
 "use client";
 
 import { useState } from "react";
@@ -11,19 +12,14 @@ export default function RegisteredToast({ name }: { name?: string | null }) {
 
   const handleClose = () => {
     setOpen(false);
-
-    // Remove query params without causing a full reload.
-    // Use window to build the new URL and router.replace to update history.
     const url = new URL(window.location.href);
     url.searchParams.delete("registered");
     url.searchParams.delete("name");
-
-    // Use replace to avoid adding history entry
     router.replace(url.pathname + url.search);
   };
 
   return (
-    <div className="fixed top-6 right-6 z-50 max-w-sm">
+    <div className="fixed top-4 right-4 z-50 max-w-sm">
       <div className="flex items-start gap-3 p-4 bg-green-50 border border-green-200 rounded-lg shadow">
         <div className="flex-1">
           <p className="font-semibold text-green-800">Player registered</p>

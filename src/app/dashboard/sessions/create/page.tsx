@@ -2,25 +2,12 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { connectDB } from "@/lib/mongodb";
 import Link from "next/link";
 import CreateSessionForm from "@/components/CreateSessionForm";
-import { Player, PlayerType } from "@/models/player";
-
-type PlayerRow = { _id: string; name: string; jersey?: number };
 
 export default async function CreateSessionPage() {
   const session = await getServerSession(authOptions);
   if (!session) redirect("/api/auth/signin?callbackUrl=/dashboard/sessions/create");
-
-  await connectDB();
-  const rawPlayers = (await Player.find().sort({ name: 1 }).lean().exec()) as Array<PlayerType & { _id: unknown }>;
-  const players: PlayerRow[] = rawPlayers.map((p) => ({
-    _id: String(p._id),
-    name: String(p.name),
-    jersey: p.jersey ?? undefined,
-  }));
-
   return (
     <main className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-3xl mx-auto">
@@ -33,7 +20,7 @@ export default async function CreateSessionPage() {
         </header>
 
         <div className="bg-white shadow rounded p-4">
-          <CreateSessionForm players={players} />
+          <CreateSessionForm />
         </div>
       </div>
     </main>
