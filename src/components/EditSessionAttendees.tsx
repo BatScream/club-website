@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import LoadingButton from "@/components/LoadingButton";
 
 type PlayerRow = { _id: string; name: string; jersey?: number };
 
@@ -77,12 +78,13 @@ export default function EditSessionAttendees({
 
             {error && <p className="text-red-600">{error}</p>}
 
-            <div className="flex gap-3">
-                <button onClick={handleSave} disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded">
-                    {loading ? "Saving…" : "Save Attendees"}
-                </button>
-                <button onClick={() => router.back()} className="px-4 py-2 bg-gray-100 rounded">Close</button>
-            </div>
+            <LoadingButton
+                onClick={handleSave}
+                loading={loading}
+                className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-60"
+            >
+                {loading ? "Saving…" : "Save Attendees"}
+            </LoadingButton>
         </div>
     );
 }
