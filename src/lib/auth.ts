@@ -9,7 +9,7 @@ import { JWT } from "next-auth/jwt";
  * Replace these emails with your coaches' emails.
  * Later you can move this to a DB and check dynamically.
  */
-const COACH_EMAILS = ["clement.lloyd@gmail.com"];
+const COACH_EMAILS = ["clement.lloyd@gmail.com", "gowreeshcse10@gmail.com"];
 
 export const authOptions: NextAuthOptions = {
   providers: [
