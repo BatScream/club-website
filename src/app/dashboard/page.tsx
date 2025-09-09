@@ -5,13 +5,7 @@ import { redirect } from "next/navigation";
 import RegisteredToast from "@/components/RegisteredToast";
 import CardLink from "@/components/CardLink";
 
-type SearchParams = { registered?: string; name?: string };
-
-export default async function DashboardPage({
-  searchParams,
-}: {
-  searchParams?: SearchParams;
-}) {
+export default async function DashboardPage({ searchParams }: { searchParams?: { registered?: string; name?: string } }) {
   const sp = await searchParams;
   const registered = sp?.registered;
   const rawName = sp?.name;
@@ -43,12 +37,20 @@ export default async function DashboardPage({
             </div>
 
             <div className="grid gap-4">
-              <CardLink href="/dashboard/register-player" ariaLabel="Create Player">
-                <h3 className="font-medium">➕ Create Player</h3>
-                <p className="text-sm text-gray-600 mt-1">Add a new player to the academy.</p>
+              {/* Registrations card */}
+              <CardLink href="/dashboard/registrations" ariaLabel="View registrations">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 bg-indigo-600 rounded flex items-center justify-center text-white font-bold">
+                    📥
+                  </div>
+                  <div>
+                    <div className="font-semibold text-gray-900">Registrations</div>
+                    <div className="text-sm text-gray-600">View pending registrations — approve or reject</div>
+                  </div>
+                </div>
               </CardLink>
               <CardLink href="/dashboard/players" ariaLabel="View Players">
-                <h3 className="font-medium">📋 View Players</h3>
+                <h3 className="font-medium">📋 View Approved players</h3>
                 <p className="text-sm text-gray-600 mt-1">See the full players list and stats.</p>
               </CardLink>
             </div>

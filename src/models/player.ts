@@ -1,17 +1,38 @@
-// models/player.ts
-import mongoose, { InferSchemaType } from "mongoose";
+// src/models/player.ts
+import mongoose, { Schema, Document, Model } from "mongoose";
 
-const PlayerSchema = new mongoose.Schema({
+export interface IPlayer extends Document {
+  name: string;
+  email?: string;
+  dob?: Date;
+  gender?: string;
+  phone?: string;
+  emergencyContact?: string;
+  parentName?: string;
+  parentContact?: string;
+  registrationId?: mongoose.Types.ObjectId; // link back to registration
+  createdAt?: Date;
+  // other fields (sessions, jersey, etc.) can remain in your model as optional
+}
+
+const PlayerSchema = new Schema<IPlayer>({
   name: { type: String, required: true },
-  age: { type: Number, required: true },
-  jersey: { type: Number, required: true },
-  createdAt: { type: Date, default: Date.now },
+  email: { type: String },
+  dob: { type: Date },
+  gender: { type: String },
+  phone: { type: String },
+  emergencyContact: { type: String },
+  parentName: { type: String },
+  parentContact: { type: String },
+
+  // reference to registration (so player points to original registration)
+  registrationId: { type: Schema.Types.ObjectId, ref: "Registration" },
+
+  // other optional metadata
+  createdAt: { type: Date, default: () => new Date() },
+}, {
+  timestamps: true,
 });
 
-// export a type inferred from the schema
-export type PlayerType = InferSchemaType<typeof PlayerSchema>;
-
-// Create / reuse the model
-export const Player =
-  (mongoose.models.Player as mongoose.Model<PlayerType>) ||
-  mongoose.model<PlayerType>("Player", PlayerSchema);
+export const Player: Model<IPlayer> = (mongoose.models.Player as Model<IPlayer>) ||
+  mongoose.model<IPlayer>("Player", PlayerSchema);

@@ -15,10 +15,6 @@ export default function Navbar() {
 
       {/* Right side */}
       <div className="flex items-center gap-4">
-        <Link href="/dashboard" className="hover:text-yellow-300">
-          Dashboard
-        </Link>
-
         {/* Loading spinner */}
         {status === "loading" && (
           <div className="w-5 h-5 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
