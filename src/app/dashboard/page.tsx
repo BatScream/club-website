@@ -1,9 +1,9 @@
 // src/app/dashboard/page.tsx
-import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import RegisteredToast from "@/components/RegisteredToast";
+import CardLink from "@/components/CardLink";
 
 type SearchParams = { registered?: string; name?: string };
 
@@ -43,19 +43,14 @@ export default async function DashboardPage({
             </div>
 
             <div className="grid gap-4">
-              <Link href="/dashboard/register-player" className="block">
-                <div className="p-5 bg-white shadow rounded-lg hover:shadow-lg transition">
-                  <h3 className="font-medium">➕ Create Player</h3>
-                  <p className="text-sm text-gray-600 mt-1">Add a new player to the academy.</p>
-                </div>
-              </Link>
-
-              <Link href="/dashboard/players" className="block">
-                <div className="p-5 bg-white shadow rounded-lg hover:shadow-lg transition">
-                  <h3 className="font-medium">📋 View Players</h3>
-                  <p className="text-sm text-gray-600 mt-1">See the full players list and stats.</p>
-                </div>
-              </Link>
+              <CardLink href="/dashboard/register-player" ariaLabel="Create Player">
+                <h3 className="font-medium">➕ Create Player</h3>
+                <p className="text-sm text-gray-600 mt-1">Add a new player to the academy.</p>
+              </CardLink>
+              <CardLink href="/dashboard/players" ariaLabel="View Players">
+                <h3 className="font-medium">📋 View Players</h3>
+                <p className="text-sm text-gray-600 mt-1">See the full players list and stats.</p>
+              </CardLink>
             </div>
           </div>
 
@@ -67,19 +62,14 @@ export default async function DashboardPage({
             </div>
 
             <div className="grid gap-4">
-              <Link href="/dashboard/sessions/create" className="block">
-                <div className="p-5 bg-white shadow rounded-lg hover:shadow-lg transition">
-                  <h3 className="font-medium">➕ Create Session</h3>
-                  <p className="text-sm text-gray-600 mt-1">Create a new session (date + name).</p>
-                </div>
-              </Link>
-
-              <Link href="/dashboard/sessions" className="block">
-                <div className="p-5 bg-white shadow rounded-lg hover:shadow-lg transition">
-                  <h3 className="font-medium">🗓️ View & Update Sessions</h3>
-                  <p className="text-sm text-gray-600 mt-1">Open a session to add/remove attendees and see attendance %.</p>
-                </div>
-              </Link>
+              <CardLink href="/dashboard/sessions/create" ariaLabel="Create Session">
+                <h3 className="font-medium">➕ Create Session</h3>
+                <p className="text-sm text-gray-600 mt-1">Create a new session (date + name).</p>
+              </CardLink>
+              <CardLink href="/dashboard/sessions" ariaLabel="View Sessions">
+                <h3 className="font-medium">🗓️ View & Update Sessions</h3>
+                <p className="text-sm text-gray-600 mt-1">Open a session to add/remove attendees and see attendance %.</p>
+              </CardLink>
             </div>
           </div>
         </section>
