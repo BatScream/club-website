@@ -29,9 +29,10 @@ export default function RegistrationDetailActions({ registrationId, playerName }
       params.set("registered", "1");
       if (playerName) params.set("name", playerName);
       router.push(`/dashboard/registrations?${params.toString()}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err?.message || "Error approving");
+      const message = err instanceof Error ? err.message : "Error approving";
+      setError(message || "Error approving");
       setLoading(null);
     }
   };
@@ -45,9 +46,10 @@ export default function RegistrationDetailActions({ registrationId, playerName }
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Delete failed");
       router.push(`/dashboard/registrations?rejected=1`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err?.message || "Error deleting");
+      const message = err instanceof Error ? err.message : "Error deleting"; 
+      setError(message || "Error deleting");
       setLoading(null);
     }
   };

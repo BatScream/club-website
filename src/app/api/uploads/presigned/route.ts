@@ -36,8 +36,9 @@ export async function POST(req: Request) {
     );
 
     return NextResponse.json({ ok: true, uploads: results });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    const message = err instanceof Error ? err.message : "Server error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

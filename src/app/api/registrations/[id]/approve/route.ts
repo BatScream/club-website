@@ -5,8 +5,8 @@ import { connectDB } from "@/lib/mongodb";
 import { Registration } from "@/models/registration";
 import { Player } from "@/models/player";
 
-export async function POST(_request: Request, { params }: { params: { id: string } }) {
-  const parameters = await params;  
+export async function POST(_request: Request, context: { params: Promise<{ id: string }>}) {
+  const parameters = await context.params;  
   const { id } = parameters;
 
   await connectDB();
@@ -23,6 +23,7 @@ export async function POST(_request: Request, { params }: { params: { id: string
     }
 
     // Build player payload with only basic profile fields (do NOT copy all registration fields)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const playerPayload: any = {
       name: reg.playerName,
       email: reg.email,

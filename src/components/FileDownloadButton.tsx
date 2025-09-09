@@ -32,9 +32,10 @@ export default function FileDownloadButton({ keyProp }: { regId: string; field: 
 
       // open in new tab
       window.open(downloadUrl, "_blank", "noopener,noreferrer");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("download error", err);
-      setError(err?.message || "Download failed");
+      const message = err instanceof Error ? err.message : "Download failed";
+      setError(message || "Download failed");
     } finally {
       setLoading(false);
     }

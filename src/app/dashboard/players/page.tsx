@@ -4,7 +4,15 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { connectDB } from "@/lib/mongodb";
-import { Player, PlayerType } from "@/models/player";
+import { Player } from "@/models/player";
+
+type LeanPlayer = {
+  _id: unknown;
+  name?: unknown;
+  age?: unknown;
+  jersey?: unknown;
+  createdAt?: string | Date | undefined;
+};
 
 type PlayerRow = {
   _id: string;
@@ -23,7 +31,7 @@ export default async function PlayersPage() {
   await connectDB();
 
   const rawPlayers = (await Player.find().sort({ name: 1 }).lean().exec()) as Array<
-    PlayerType & { _id: unknown }
+    LeanPlayer & { _id: unknown }
   >;
 
   const players: PlayerRow[] = rawPlayers.map((p) => ({

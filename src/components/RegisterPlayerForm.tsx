@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 
 type FileField = "photo" | "idDoc" | "birthProof" | "paymentReceipt";
 
-export default function RegisterPlayerForm({ redirectPath = "/", showThankYou = true }: { redirectPath?: string; showThankYou?: boolean }) {
+export default function RegisterPlayerForm({ redirectPath = "/" }: { redirectPath?: string; }) {
   const router = useRouter();
 
   // Steps simple multi-step (you can expand)
@@ -55,7 +55,8 @@ export default function RegisterPlayerForm({ redirectPath = "/", showThankYou = 
   // Payment
   const [program, setProgram] = useState("3-days-weekly");
   const [paymentMethod, setPaymentMethod] = useState<"phone" | "upi">("phone");
-  const [upiId, setUpiId] = useState("8056318891@ptsbi");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [upiId, _setUpiId] = useState("8056318891@ptsbi");
 
   // Files
   const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -109,6 +110,7 @@ export default function RegisterPlayerForm({ redirectPath = "/", showThankYou = 
     const uploads: { field: string; key: string; filename: string; uploadUrl: string }[] = presignJson.uploads;
 
     // perform PUT uploads in parallel
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fileRefs: Record<string, any> = {};
     await Promise.all(
       uploads.map(async (u) => {
@@ -155,6 +157,7 @@ export default function RegisterPlayerForm({ redirectPath = "/", showThankYou = 
       const fileRefs = await uploadFilesToS3(filesToUpload);
 
       // build registration payload
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = {
         email,
         playerName,
@@ -201,9 +204,10 @@ export default function RegisterPlayerForm({ redirectPath = "/", showThankYou = 
       params.set("registered", "1");
       if (playerName) params.set("name", playerName);
       router.push(`${redirectPath}?${params.toString()}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("submit error", err);
-      setError(err?.message || "Submission failed");
+      const message = err instanceof Error ? err.message : "Submission failed";
+      setError(message || "Submission failed");
       setLoading(false);
     }
   };

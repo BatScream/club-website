@@ -6,9 +6,17 @@ import { connectDB } from "@/lib/mongodb";
 import Link from "next/link";
 import EditSessionAttendees from "@/components/EditSessionAttendees";
 import { Session } from "@/models/session";
-import { Player, PlayerType } from "@/models/player";
+import { Player } from "@/models/player";
 
 type PlayerRow = { _id: string; name: string; jersey?: number };
+
+type LeanPlayer = {
+  _id: unknown;
+  name?: unknown;
+  age?: unknown;
+  jersey?: unknown;
+  createdAt?: string | Date | undefined;
+};
 
 export default async function SessionDetailPage({
   params,
@@ -41,12 +49,14 @@ export default async function SessionDetailPage({
 
   // load players to allow adding/removing
   const rawPlayers = (await Player.find().sort({ name: 1 }).lean().exec()) as Array<
-    PlayerType & { _id: unknown }
+    LeanPlayer & { _id: unknown }
   >;
   const players: PlayerRow[] = rawPlayers.map((p) => ({
     _id: String(p._id),
     name: String(p.name),
-    jersey: p.jersey ?? undefined,
+    age: Number(p.age ?? 0),
+    jersey: Number(p.jersey ?? 0),
+    createdAt: p.createdAt ?? undefined,
   }));
 
   const sessionData = {

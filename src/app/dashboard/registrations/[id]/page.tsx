@@ -78,9 +78,13 @@ export default async function RegistrationDetailPage({ params }: Props) {
             <h2 className="text-lg font-semibold mb-2">Uploaded documents</h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               <FileCard label="Passport size photo" regId={parameters.id} field="photo" fileRef={(reg as any).photo ?? null} />
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               <FileCard label="National ID" regId={parameters.id} field="idDoc" fileRef={(reg as any).idDoc ?? null} />
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               <FileCard label="Birth proof" regId={parameters.id} field="birthProof" fileRef={(reg as any).birthProof ?? null} />
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               <FileCard label="Payment receipt" regId={parameters.id} field="paymentReceipt" fileRef={(reg as any).paymentReceipt ?? null} />
             </div>
           </section>
@@ -104,6 +108,7 @@ export default async function RegistrationDetailPage({ params }: Props) {
 }
 
 /** Server helper: render file card that mounts client button */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function FileCard({ label, regId, field, fileRef }: { label: string; regId: string; field: "photo" | "idDoc" | "birthProof" | "paymentReceipt"; fileRef?: any | null }) {
   if (!fileRef) {
     return (

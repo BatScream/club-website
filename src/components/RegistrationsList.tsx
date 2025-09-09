@@ -39,8 +39,9 @@ export default function RegistrationsList({ initialRegistrations }: { initialReg
             if (!res.ok) throw new Error(json.error || "Approve failed");
             // remove from list
             removeItem(id);
-        } catch (err: any) {
-            setError(err?.message || "Error approving");
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : "Error approving";
+            setError(message || "Error approving");
         } finally {
             setLoadingId(null);
         }
@@ -55,8 +56,9 @@ export default function RegistrationsList({ initialRegistrations }: { initialReg
             const json = await res.json();
             if (!res.ok) throw new Error(json.error || "Delete failed");
             removeItem(id);
-        } catch (err: any) {
-            setError(err?.message || "Error deleting");
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : "Error deleting";
+            setError(message || "Error deleting");
         } finally {
             setLoadingId(null);
         }

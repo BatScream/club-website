@@ -12,6 +12,7 @@ type FileRefInput = {
   key: string; // S3 object key
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isFileRef(obj: any): obj is FileRefInput {
   return (
     obj &&
@@ -139,8 +140,9 @@ export async function POST(request: Request) {
     await registration.save();
 
     return NextResponse.json({ ok: true, id: registration._id }, { status: 201 });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("registrations POST error:", err);
-    return NextResponse.json({ error: err?.message || "Server error" }, { status: 500 });
+    const message = err instanceof Error ? err.message : "Server error";
+    return NextResponse.json({ error: message || "Server error" }, { status: 500 });
   }
 }

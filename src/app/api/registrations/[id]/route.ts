@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Registration } from "@/models/registration";
 
-export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function DELETE(_request: Request, context: { params: Promise<{ id: string }>}) {
+  const parameters = await context.params;  
+  const { id } = parameters;
   try {
     await connectDB();
     const reg = await Registration.findById(id).exec();
