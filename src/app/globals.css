@@ -8,3 +8,23 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Hide scrollbars globally while keeping scroll functionality */
+/* For WebKit-based browsers */
+*::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+*::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: none; /* hide scrollbar */
+}
+
+/* For IE/Edge legacy (optional, harmless elsewhere) */
+body {
+  -ms-overflow-style: none; /* hide scrollbar */
+}
