@@ -183,7 +183,7 @@ export default function RegisterPlayerForm({ redirectPath = "/" }: { redirectPat
       throw new Error(`Failed to get upload URLs: ${txt || presignRes.status}`);
     }
     const presignJson = await presignRes.json();
-    const uploads: { field: string; key: string; filename: string; uploadUrl: string }[] = presignJson.uploads;
+    const uploads: { field: string; key: string; filename: string; uploadUrl: string, registrationId: unknown }[] = presignJson.uploads;
 
     // perform PUT uploads in parallel
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -205,6 +205,7 @@ export default function RegisterPlayerForm({ redirectPath = "/" }: { redirectPat
           contentType: pair.file.type,
           size: pair.file.size,
           key: u.key,
+          registrationId: u.registrationId
         };
       })
     );
@@ -258,10 +259,11 @@ export default function RegisterPlayerForm({ redirectPath = "/" }: { redirectPat
         paymentMethod,
         upiId,
         // file refs (may be empty)
-        photo: fileRefs.photo.key ?? undefined,
-        idDoc: fileRefs.idDoc.key ?? undefined,
-        birthProof: fileRefs.birthProof.key ?? undefined,
-        paymentReceipt: fileRefs.paymentReceipt.key ?? undefined,
+        photo: fileRefs.photo,
+        idDoc: fileRefs.idDoc,
+        birthProof: fileRefs.birthProof,
+        paymentReceipt: fileRefs.paymentReceipt,
+        _id: fileRefs.registrationId
       };
 
       const res = await fetch("/api/registrations", {
@@ -563,14 +565,16 @@ export default function RegisterPlayerForm({ redirectPath = "/" }: { redirectPat
 
       {/* Actions */}
       <div className="mt-4 flex gap-2">
-        <button
-          type="button"
-          onClick={() => setStep((s) => Math.max(0, s - 1))}
-          disabled={step === 0 || loading}
-          className="px-3 py-2 border rounded bg-gray-50"
-        >
-          Back
-        </button>
+        {
+          step != 0 && (<button
+            type="button"
+            onClick={() => setStep((s) => Math.max(0, s - 1))}
+            disabled={step === 0 || loading}
+            className="px-3 py-2 border rounded bg-gray-50"
+          >
+            Back
+          </button>)
+        }
 
         {step < steps.length - 1 && (
           <button

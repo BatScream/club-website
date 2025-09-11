@@ -79,6 +79,7 @@ export async function POST(request: Request) {
 
     // Build registration document
     const doc: Partial<IRegistration> = {
+      _id: body._id, // from presign step
       email,
       playerName,
       phone,
