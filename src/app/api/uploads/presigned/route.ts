@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import mongoose from 'mongoose';
+import { v4 as uuidv4 } from "uuid";
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION,
@@ -17,9 +19,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "files[] required" }, { status: 400 });
     }
 
+    const registrationId = new mongoose.Types.ObjectId();
     const results = await Promise.all(
       files.map(async (f: { field: string; filename: string; contentType?: string }) => {
-        const key = `registrations/${Date.now()}-${Math.random().toString(36).slice(2, 9)}-${f.filename}`;
+        const uuid = uuidv4().replace(/-/g, "");
+        const sanitizedFilename = f.filename.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9._-]/g, "");
+        const key = `registrations/${registrationId.toString()}/documents/${f.field}/${uuid}_${sanitizedFilename}`;
 
         const cmd = new PutObjectCommand({
           Bucket: process.env.AWS_S3_BUCKET_NAME!,
@@ -31,7 +36,7 @@ export async function POST(req: Request) {
           expiresIn: parseInt(process.env.UPLOAD_URL_EXPIRATION || "900", 10),
         });
 
-        return { field: f.field, key, filename: f.filename, contentType: f.contentType, uploadUrl };
+        return { field: f.field, key, filename: f.filename, contentType: f.contentType, uploadUrl, registrationId };
       })
     );
 
