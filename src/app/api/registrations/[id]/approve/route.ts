@@ -32,7 +32,7 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
       emergencyContact: reg.emergencyContact,
       parentName: reg.parentName,
       parentContact: reg.parentContact,
-      registrationId: reg._id, // reference to source registration
+      registrationId: reg._id instanceof mongoose.Types.ObjectId ? reg._id : undefined, // reference to source registration
     };
 
     // Create the player document
