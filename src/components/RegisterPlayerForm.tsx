@@ -441,14 +441,16 @@ export default function RegisterPlayerForm({ redirectPath = "/" }: { redirectPat
 
       {/* Actions */}
       <div className="mt-4 flex gap-2">
-        <button
-          type="button"
-          onClick={() => setStep((s) => Math.max(0, s - 1))}
-          disabled={step === 0 || loading}
-          className="px-3 py-2 border rounded bg-gray-50"
-        >
-          Back
-        </button>
+        {
+          step != 0 && (<button
+            type="button"
+            onClick={() => setStep((s) => Math.max(0, s - 1))}
+            disabled={step === 0 || loading}
+            className="px-3 py-2 border rounded bg-gray-50"
+          >
+            Back
+          </button>)
+        }
 
         {step < steps.length - 1 && (
           <button
