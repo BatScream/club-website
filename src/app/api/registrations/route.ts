@@ -7,9 +7,9 @@ import type { IRegistration } from "@/models/registration";
 
 type FileRefInput = {
   filename: string;
-  contentType?: string;
+  mimeType?: string;
   size?: number;
-  key: string; // S3 object key
+  fileId: string;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -17,8 +17,10 @@ function isFileRef(obj: any): obj is FileRefInput {
   return (
     obj &&
     typeof obj === "object" &&
-    typeof obj.filename === "string" &&
-    typeof obj.key === "string"
+    "filename" in obj &&
+    "fileId" in obj &&
+    typeof (obj as any).filename === "string" &&
+    typeof (obj as any).fileId === "string"
   );
 }
 
@@ -72,12 +74,6 @@ export async function POST(request: Request) {
     const paymentMethod = typeof body.paymentMethod === "string" ? body.paymentMethod : undefined;
     const upiId = typeof body.upiId === "string" ? body.upiId : undefined;
 
-    // File refs (expected shape produced by the upload flow)
-    const photo = body.photo && isFileRef(body.photo) ? body.photo : undefined;
-    const idDoc = body.idDoc && isFileRef(body.idDoc) ? body.idDoc : undefined;
-    const birthProof = body.birthProof && isFileRef(body.birthProof) ? body.birthProof : undefined;
-    const paymentReceipt = body.paymentReceipt && isFileRef(body.paymentReceipt) ? body.paymentReceipt : undefined;
-
     // Connect DB
     await connectDB();
 
@@ -104,34 +100,10 @@ export async function POST(request: Request) {
       program,
       paymentMethod,
       upiId,
-      photo: photo ? {
-        filename: photo.filename,
-        contentType: photo.contentType,
-        size: photo.size,
-        key: photo.key,
-        uploadedAt: new Date(),
-      } : undefined,
-      idDoc: idDoc ? {
-        filename: idDoc.filename,
-        contentType: idDoc.contentType,
-        size: idDoc.size,
-        key: idDoc.key,
-        uploadedAt: new Date(),
-      } : undefined,
-      birthProof: birthProof ? {
-        filename: birthProof.filename,
-        contentType: birthProof.contentType,
-        size: birthProof.size,
-        key: birthProof.key,
-        uploadedAt: new Date(),
-      } : undefined,
-      paymentReceipt: paymentReceipt ? {
-        filename: paymentReceipt.filename,
-        contentType: paymentReceipt.contentType,
-        size: paymentReceipt.size,
-        key: paymentReceipt.key,
-        uploadedAt: new Date(),
-      } : undefined,
+      photo: isFileRef(body.photo) ? { ...body.photo, uploadedAt: new Date() } : undefined,
+      idDoc: isFileRef(body.idDoc) ? { ...body.idDoc, uploadedAt: new Date() } : undefined,
+      birthProof: isFileRef(body.birthProof) ? { ...body.birthProof, uploadedAt: new Date() } : undefined,
+      paymentReceipt: isFileRef(body.paymentReceipt) ? { ...body.paymentReceipt, uploadedAt: new Date() } : undefined,
       status: "pending",
       createdAt: new Date(),
     };

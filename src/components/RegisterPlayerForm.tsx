@@ -90,6 +90,25 @@ export default function RegisterPlayerForm({ redirectPath = "/" }: { redirectPat
     return null;
   };
 
+  async function uploadFileToDrive(field: string, file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch("/api/uploads/drive", {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) throw new Error("Upload failed");
+  const json = await res.json();
+  return {
+    filename: file.name,
+    mimeType: file.type,
+    size: file.size,
+    fileId: json.file.id,
+  };
+}
+
   // Upload files to S3 via presigned URLs
   async function uploadFilesToS3(files: { field: FileField; file: File }[]) {
     if (files.length === 0) return {};
@@ -146,15 +165,14 @@ export default function RegisterPlayerForm({ redirectPath = "/" }: { redirectPat
     setLoading(true);
 
     try {
-      // files to upload
-      const filesToUpload: { field: FileField; file: File }[] = [];
-      if (photoFile) filesToUpload.push({ field: "photo", file: photoFile });
-      if (idDocFile) filesToUpload.push({ field: "idDoc", file: idDocFile });
-      if (birthProofFile) filesToUpload.push({ field: "birthProof", file: birthProofFile });
-      if (paymentReceiptFile) filesToUpload.push({ field: "paymentReceipt", file: paymentReceiptFile });
 
       // upload and get keys
-      const fileRefs = await uploadFilesToS3(filesToUpload);
+      const fileRefs: Record<string, any> = {};
+      if (photoFile) fileRefs.photo = await uploadFileToDrive("photo", photoFile);
+      if (idDocFile) fileRefs.idDoc = await uploadFileToDrive("idDoc", idDocFile);
+      if (birthProofFile) fileRefs.birthProof = await uploadFileToDrive("birthProof", birthProofFile);
+      if (paymentReceiptFile) fileRefs.paymentReceipt = await uploadFileToDrive("paymentReceipt", paymentReceiptFile);
+  
 
       // build registration payload
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

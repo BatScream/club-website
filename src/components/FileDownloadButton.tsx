@@ -1,41 +1,42 @@
-// src/components/FileDownloadButton.tsx
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 
-/**
- * FileDownloadButton
- * Calls server endpoint /api/uploads/download?key=<S3 key> which returns a presigned GET URL,
- * then opens that URL in a new tab.
- *
- * Props:
- *  - filename?: string
- *  - keyProp: s3 key string (passed in for clarity)
- */
-export default function FileDownloadButton({ keyProp }: { regId: string; field: string; filename?: string | null; keyProp: string }) {
+type Props = {
+  fileId: string;
+  filename?: string | null;
+};
+
+export default function FileDownloadButton({ fileId, filename }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleOpen = async () => {
     setError(null);
     setLoading(true);
+
     try {
-      // call server to generate download presigned url
-      const res = await fetch(`/api/uploads/download?key=${encodeURIComponent(keyProp)}`);
+      const res = await fetch(
+        `/api/uploads/drive-download?fileId=${encodeURIComponent(fileId)}`
+      );
       if (!res.ok) {
         const body = await res.json().catch(() => null);
-        throw new Error((body && body.error) || `Failed to get download URL (${res.status})`);
+        throw new Error(body?.error || `Failed to get file (${res.status})`);
       }
-      const json = await res.json();
-      const { downloadUrl } = json;
-      if (!downloadUrl) throw new Error("No download URL returned");
 
-      // open in new tab
-      window.open(downloadUrl, "_blank", "noopener,noreferrer");
+      // The endpoint streams the file directly, so open it in a new tab
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename || "document";
+      link.target = "_blank";
+      link.click();
+      URL.revokeObjectURL(url);
     } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
       console.error("download error", err);
-      const message = err instanceof Error ? err.message : "Download failed";
-      setError(message || "Download failed");
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -43,17 +44,15 @@ export default function FileDownloadButton({ keyProp }: { regId: string; field: 
 
   return (
     <div className="flex flex-col items-end">
-      <button type="button" onClick={handleOpen} disabled={loading} className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded text-sm disabled:opacity-60">
-        {loading ? (
-          <>
-            <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-20" /><path d="M22 12a10 10 0 00-10-10" stroke="currentColor" strokeWidth="4" strokeLinecap="round" /></svg>
-            <span>Opening…</span>
-          </>
-        ) : (
-          <span>Open</span>
-        )}
+      <button
+        type="button"
+        onClick={handleOpen}
+        disabled={loading}
+        aria-label={`Open ${filename ?? "file"}`}
+        className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded text-sm disabled:opacity-60"
+      >
+        {loading ? "Opening…" : "Open"}
       </button>
-
       {error && <div className="text-xs text-red-600 mt-1">{error}</div>}
     </div>
   );

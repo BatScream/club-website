@@ -2,13 +2,12 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface IFileRef {
-  filename?: string;
-  contentType?: string;
+  filename: string;
+  mimeType?: string;
   size?: number;
-  key: string; 
+  fileId: string; // Google Drive file ID
   uploadedAt?: Date;
 }
-
 export interface IRegistration extends Document {
   email: string;
   playerName: string;
@@ -48,10 +47,10 @@ export interface IRegistration extends Document {
 
 const FileRefSchema = new Schema<IFileRef>(
   {
-    filename: String,
-    contentType: String,
+    filename: { type: String, required: true },
+    mimeType: String,
     size: Number,
-    key: { type: String, required: true },
+    fileId: { type: String, required: true },
     uploadedAt: { type: Date, default: () => new Date() },
   },
   { _id: false }
