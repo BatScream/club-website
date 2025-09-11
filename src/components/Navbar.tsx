@@ -15,11 +15,6 @@ export default function Navbar() {
 
       {/* Right side */}
       <div className="flex items-center gap-4">
-        {/* Loading spinner */}
-        {status === "loading" && (
-          <div className="w-5 h-5 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
-        )}
-
         {/* Authenticated state */}
         {status === "authenticated" && (
           <div className="flex items-center gap-3">
