@@ -1,7 +1,7 @@
 // src/components/RegisterPlayerForm.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 /**
@@ -19,6 +19,77 @@ type FileField = "photo" | "idDoc" | "birthProof" | "paymentReceipt";
 
 export default function RegisterPlayerForm({ redirectPath = "/" }: { redirectPath?: string; }) {
   const router = useRouter();
+  
+  function FileUpload({ label, accept, file, onChange, required = false }: { label: string; accept: string; file: File | null; onChange: (f: File | null) => void; required?: boolean }) {
+    const inputRef = useRef<HTMLInputElement | null>(null);
+    const [preview, setPreview] = useState<string | null>(null);
+
+    useEffect(() => {
+      if (file && file.type.startsWith("image/")) {
+        const url = URL.createObjectURL(file);
+        setPreview(url);
+        return () => URL.revokeObjectURL(url);
+      }
+      setPreview(null);
+      return undefined;
+    }, [file]);
+
+    const formatSize = (bytes: number) => {
+      if (!bytes && bytes !== 0) return "";
+      const units = ["B", "KB", "MB", "GB"]; let i = 0; let s = bytes;
+      while (s >= 1024 && i < units.length - 1) { s /= 1024; i++; }
+      return `${s.toFixed(s < 10 ? 1 : 0)} ${units[i]}`;
+    };
+
+    return (
+      <div className="block">
+        <span className="text-sm">
+          {label} {required && <span className="text-red-500">*</span>}
+        </span>
+        <div className="mt-1 flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-500 active:scale-[0.98] transition"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Upload
+          </button>
+
+          {file ? (
+            <div className="flex items-center gap-3 rounded-md border bg-gray-50 px-2 py-1.5">
+              {preview && <img src={preview} alt="preview" className="w-8 h-8 rounded object-cover" />}
+              <div className="min-w-0">
+                <div className="max-w-[220px] truncate text-sm font-medium">{file.name}</div>
+                <div className="text-xs text-gray-500">{formatSize(file.size)}</div>
+              </div>
+              <button
+                type="button"
+                onClick={() => onChange(null)}
+                className="ml-2 p-1 rounded-full hover:bg-gray-200 transition-colors"
+                aria-label="Remove file"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          ) : (
+            <span className="text-xs text-gray-500">No file selected</span>
+          )}
+
+          <input
+            ref={inputRef}
+            type="file"
+            accept={accept}
+            className="hidden"
+            onChange={(e) => onChange(e.target.files?.[0] ?? null)}
+          />
+        </div>
+      </div>
+    );
+  }
 
   // Steps simple multi-step (you can expand)
   const [step, setStep] = useState<number>(0);
@@ -65,6 +136,11 @@ export default function RegisterPlayerForm({ redirectPath = "/" }: { redirectPat
   const [paymentReceiptFile, setPaymentReceiptFile] = useState<File | null>(null);
 
   const steps = ["Profile", "Experience", "Documents", "Parent", "Consent", "Payment", "Review"];
+
+  // Clear any validation message when navigating between steps
+  useEffect(() => {
+    setError(null);
+  }, [step]);
 
   // Validation minimal per-step
   const validateStep = (): string | null => {
@@ -214,33 +290,68 @@ export default function RegisterPlayerForm({ redirectPath = "/" }: { redirectPat
 
   // simple buttons and small UI (you can expand to full multi-step)
   return (
-    <div className="w-full max-w-3xl mx-auto bg-white rounded-lg shadow p-4 sm:p-6">
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Player Registration</h2>
-        <div className="text-sm text-gray-600">{steps[step]}</div>
+    <div className="w-full max-w-3xl mx-auto">
+      {/* Stepper ABOVE the white form card */}
+      {/* Mobile: compact progress dots (non-interactive) */}
+      <div className="mb-3 flex items-center justify-center gap-2 md:hidden">
+        {steps.map((_, index) => (
+          <div
+            key={index}
+            aria-hidden
+            className={
+              "h-2.5 w-2.5 rounded-full " +
+              (index <= step ? "bg-blue-600" : "bg-gray-300")
+            }
+          />
+        ))}
       </div>
+      {/* Desktop chevrons: right-pointing arrows, non-interactive */}
+      <div className="hidden md:flex mb-4 justify-center" aria-label="Registration steps">
+        {steps.map((title, index) => (
+          <div
+            key={title}
+            className={
+              "relative flex items-center px-3 py-2 text-sm font-medium mr-2 cursor-default select-none " +
+              (index === step
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-gray-800")
+            }
+            style={{
+              clipPath:
+                index === 0
+                  ? "polygon(0% 0%, 96% 0%, 100% 50%, 96% 100%, 0% 100%)"
+                  : "polygon(0% 0%, 96% 0%, 100% 50%, 96% 100%, 0% 100%, 4% 50%)",
+            }}
+          >
+            <span className="whitespace-nowrap">{index + 1}. {title}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* White form card */}
+      <div className="bg-white rounded-lg shadow p-4 sm:p-6">
 
       {/* Step content (condensed) */}
       {step === 0 && (
         <div className="space-y-3">
           <label className="block">
-            <span className="text-sm">Email *</span>
+            <span className="text-sm">Email <span className="text-red-500">*</span></span>
             <input value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 block w-full border rounded p-2" />
           </label>
 
           <label className="block">
-            <span className="text-sm">Player full name *</span>
+            <span className="text-sm">Player full name <span className="text-red-500">*</span></span>
             <input value={playerName} onChange={(e) => setPlayerName(e.target.value)} className="mt-1 block w-full border rounded p-2" />
           </label>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <label className="block">
-              <span className="text-sm">Phone *</span>
+              <span className="text-sm">Phone <span className="text-red-500">*</span></span>
               <input value={phone} onChange={(e) => setPhone(e.target.value)} className="mt-1 block w-full border rounded p-2" />
             </label>
 
             <label className="block">
-              <span className="text-sm">Emergency contact *</span>
+              <span className="text-sm">Emergency contact <span className="text-red-500">*</span></span>
               <input value={emergencyContact} onChange={(e) => setEmergencyContact(e.target.value)} className="mt-1 block w-full border rounded p-2" />
             </label>
           </div>
@@ -281,7 +392,7 @@ export default function RegisterPlayerForm({ redirectPath = "/" }: { redirectPat
           </label>
 
           <label>
-            <span className="text-sm">Purpose of joining *</span>
+            <span className="text-sm">Purpose of joining <span className="text-red-500">*</span></span>
             <textarea value={purpose} onChange={(e) => setPurpose(e.target.value)} className="mt-1 block w-full border rounded p-2" />
           </label>
 
@@ -305,37 +416,25 @@ export default function RegisterPlayerForm({ redirectPath = "/" }: { redirectPat
           </div>
 
           <label>
-            <span className="text-sm">Any football related injuries or medical conditions *</span>
+            <span className="text-sm">Any football related injuries or medical conditions <span className="text-red-500">*</span></span>
             <textarea value={injuries} onChange={(e) => setInjuries(e.target.value)} className="mt-1 block w-full border rounded p-2" />
           </label>
         </div>
       )}
 
       {step === 2 && (
-        <div className="space-y-3">
+        <div className="space-y-4">
           <p className="text-sm text-gray-600">Upload required documents (JPEG/PNG/PDF). Files kept private.</p>
-
-          <label className="block">
-            <span className="text-sm">Passport size photo *</span>
-            <input type="file" accept="image/*" onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)} className="mt-1" />
-          </label>
-
-          <label className="block">
-            <span className="text-sm">National ID *</span>
-            <input type="file" accept="image/*,application/pdf" onChange={(e) => setIdDocFile(e.target.files?.[0] ?? null)} className="mt-1" />
-          </label>
-
-          <label className="block">
-            <span className="text-sm">Birth proof *</span>
-            <input type="file" accept="image/*,application/pdf" onChange={(e) => setBirthProofFile(e.target.files?.[0] ?? null)} className="mt-1" />
-          </label>
+          <FileUpload label="Passport size photo" accept="image/*" required file={photoFile} onChange={setPhotoFile} />
+          <FileUpload label="National ID" accept="image/*,application/pdf" required file={idDocFile} onChange={setIdDocFile} />
+          <FileUpload label="Birth proof" accept="image/*,application/pdf" required file={birthProofFile} onChange={setBirthProofFile} />
         </div>
       )}
 
       {step === 3 && (
         <div className="space-y-3">
           <label>
-            <span className="text-sm">Parent / Guardian name *</span>
+            <span className="text-sm">Parent / Guardian name <span className="text-red-500">*</span></span>
             <input value={parentName} onChange={(e) => setParentName(e.target.value)} className="mt-1 block w-full border rounded p-2" />
           </label>
 
@@ -350,7 +449,7 @@ export default function RegisterPlayerForm({ redirectPath = "/" }: { redirectPat
             </label>
 
             <label>
-              <span className="text-sm">Parent / Guardian contact *</span>
+              <span className="text-sm">Parent / Guardian contact <span className="text-red-500">*</span></span>
               <input value={parentContact} onChange={(e) => setParentContact(e.target.value)} className="mt-1 block w-full border rounded p-2" />
             </label>
           </div>
@@ -363,32 +462,58 @@ export default function RegisterPlayerForm({ redirectPath = "/" }: { redirectPat
       )}
 
       {step === 4 && (
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div>
-            <label className="flex items-start gap-2">
-              <input type="checkbox" checked={consentParticipate} onChange={(e) => setConsentParticipate(e.target.checked)} />
-              <span className="text-sm">I consent for my child to participate. (Required)</span>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input 
+                type="checkbox" 
+                checked={consentParticipate} 
+                onChange={(e) => setConsentParticipate(e.target.checked)}
+                className="mt-0.5 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+              />
+              <span className="text-sm">
+                I consent for my child to participate. <span className="text-red-500">*</span>
+              </span>
             </label>
           </div>
 
           <div>
-            <label className="flex items-start gap-2">
-              <input type="checkbox" checked={consentLiability} onChange={(e) => setConsentLiability(e.target.checked)} />
-              <span className="text-sm">Release of liability waiver (Required)</span>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input 
+                type="checkbox" 
+                checked={consentLiability} 
+                onChange={(e) => setConsentLiability(e.target.checked)}
+                className="mt-0.5 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+              />
+              <span className="text-sm">
+                Release of liability waiver <span className="text-red-500">*</span>
+              </span>
             </label>
           </div>
 
           <div>
-            <label className="flex items-start gap-2">
-              <input type="checkbox" checked={consentMedia} onChange={(e) => setConsentMedia(e.target.checked)} />
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input 
+                type="checkbox" 
+                checked={consentMedia} 
+                onChange={(e) => setConsentMedia(e.target.checked)}
+                className="mt-0.5 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+              />
               <span className="text-sm">Media release (Agree)</span>
             </label>
           </div>
 
           <div>
-            <label className="flex items-start gap-2">
-              <input type="checkbox" checked={consentAIFF} onChange={(e) => setConsentAIFF(e.target.checked)} />
-              <span className="text-sm">I agree with AIFF regulations. (Required)</span>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input 
+                type="checkbox" 
+                checked={consentAIFF} 
+                onChange={(e) => setConsentAIFF(e.target.checked)}
+                className="mt-0.5 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+              />
+              <span className="text-sm">
+                I agree with AIFF regulations. <span className="text-red-500">*</span>
+              </span>
             </label>
           </div>
         </div>
@@ -418,10 +543,7 @@ export default function RegisterPlayerForm({ redirectPath = "/" }: { redirectPat
             </label>
           </div>
 
-          <label>
-            <span className="text-sm">Upload payment receipt *</span>
-            <input type="file" accept="image/*,application/pdf" onChange={(e) => setPaymentReceiptFile(e.target.files?.[0] ?? null)} className="mt-1" />
-          </label>
+          <FileUpload label="Upload payment receipt" accept="image/*,application/pdf" required file={paymentReceiptFile} onChange={setPaymentReceiptFile} />
         </div>
       )}
 
@@ -479,6 +601,8 @@ export default function RegisterPlayerForm({ redirectPath = "/" }: { redirectPat
             {loading ? "Submitting…" : "Submit Registration"}
           </button>
         )}
+      </div>
+      {/* End white form card */}
       </div>
     </div>
   );
