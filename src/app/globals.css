@@ -1,13 +1,11 @@
-@import "tailwindcss/preflight";
-@import "tailwindcss/utilities";
+@import "tailwindcss";
 
 html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Hide scrollbars globally while keeping scroll functionality */
-/* For WebKit-based browsers */
+/* scrollbar hide */
 *::-webkit-scrollbar {
   width: 0px;
   height: 0px;
@@ -15,13 +13,9 @@ html, body {
 *::-webkit-scrollbar-thumb {
   background: transparent;
 }
-
-/* For Firefox */
 * {
-  scrollbar-width: none; /* hide scrollbar */
+  scrollbar-width: none;
 }
-
-/* For IE/Edge legacy (optional, harmless elsewhere) */
 body {
-  -ms-overflow-style: none; /* hide scrollbar */
+  -ms-overflow-style: none;
 }
