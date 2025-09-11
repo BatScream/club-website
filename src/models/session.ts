@@ -3,12 +3,11 @@ import mongoose, { InferSchemaType } from "mongoose";
 
 const SessionSchema = new mongoose.Schema(
   {
-    date: { type: Date, required: true }, // session start timestamp
+    date: { type: Date, required: true },
     name: { type: String, required: true },
-    attendees: [{ type: mongoose.Schema.Types.ObjectId, ref: "Player" }], // players who attended
-    createdAt: { type: Date, default: Date.now },
+    attendees: [{ type: mongoose.Schema.Types.ObjectId, ref: "Player" }],
   },
-  { collection: "sessions" }
+  { collection: "sessions", timestamps: true }
 );
 
 export type SessionType = InferSchemaType<typeof SessionSchema>;

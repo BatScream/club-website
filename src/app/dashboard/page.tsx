@@ -6,7 +6,7 @@ import RegisteredToast from "@/components/RegisteredToast";
 import CardLink from "@/components/CardLink";
 
 export default async function DashboardPage({ searchParams }: { searchParams?: { registered?: string; name?: string } }) {
-  const sp = await searchParams;
+  const sp = searchParams;
   const registered = sp?.registered;
   const rawName = sp?.name;
   const name = rawName ? decodeURIComponent(rawName) : undefined;

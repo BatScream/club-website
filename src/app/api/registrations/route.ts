@@ -12,14 +12,10 @@ type FileRefInput = {
   key: string; // S3 object key
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function isFileRef(obj: any): obj is FileRefInput {
-  return (
-    obj &&
-    typeof obj === "object" &&
-    typeof obj.filename === "string" &&
-    typeof obj.key === "string"
-  );
+function isFileRef(obj: unknown): obj is FileRefInput {
+  if (!obj || typeof obj !== "object") return false;
+  const candidate = obj as Partial<FileRefInput>;
+  return typeof candidate.filename === "string" && typeof candidate.key === "string";
 }
 
 export async function POST(request: Request) {

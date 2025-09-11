@@ -5,14 +5,14 @@ export interface IFileRef {
   filename?: string;
   contentType?: string;
   size?: number;
-  key: string; 
+  key: string;
   uploadedAt?: Date;
 }
 
 export interface IRegistration extends Document {
   email: string;
   playerName: string;
-  dob: Date | string;
+  dob?: Date;
   gender?: string;
   phone: string;
   emergencyContact?: string;
@@ -23,24 +23,24 @@ export interface IRegistration extends Document {
   previousClub?: string;
   injuries?: string;
 
-  photo: IFileRef;
-  idDoc: IFileRef;
-  birthProof: IFileRef;
+  photo?: IFileRef;
+  idDoc?: IFileRef;
+  birthProof?: IFileRef;
 
   parentName?: string;
   relationship?: string;
   parentContact?: string;
   occupation?: string;
 
-  consentParticipate: boolean;
-  consentLiability: boolean;
-  consentMedia: boolean;
-  consentAIFF: boolean;
+  consentParticipate?: boolean;
+  consentLiability?: boolean;
+  consentMedia?: boolean;
+  consentAIFF?: boolean;
 
   program?: string;
   paymentMethod?: string;
   upiId?: string;
-  paymentReceipt: IFileRef;
+  paymentReceipt?: IFileRef;
 
   status: "pending" | "approved" | "rejected";
   createdAt: Date;

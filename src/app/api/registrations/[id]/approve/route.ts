@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { connectDB } from "@/lib/mongodb";
 import { Registration } from "@/models/registration";
-import { Player } from "@/models/player";
+import { Player, type IPlayer } from "@/models/player";
 
 export async function POST(_request: Request, context: { params: Promise<{ id: string }>}) {
   const parameters = await context.params;  
@@ -23,8 +23,7 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
     }
 
     // Build player payload with only basic profile fields (do NOT copy all registration fields)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const playerPayload: any = {
+    const playerPayload: Partial<IPlayer> = {
       name: reg.playerName,
       email: reg.email,
       dob: reg.dob,
