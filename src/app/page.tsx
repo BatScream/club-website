@@ -5,7 +5,7 @@ import RegisteredToast from "@/components/RegisteredToast";
 type SearchParams = { registered?: string; name?: string };
 
 export default async function Home({ searchParams }: { searchParams?: SearchParams }) {
-  const sp = searchParams;
+  const sp = await searchParams;
   const registered = sp?.registered;
   const rawName = sp?.name;
   const name = rawName ? decodeURIComponent(rawName) : undefined;

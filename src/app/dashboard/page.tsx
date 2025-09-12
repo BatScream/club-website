@@ -5,11 +5,9 @@ import { redirect } from "next/navigation";
 import RegisteredToast from "@/components/RegisteredToast";
 import CardLink from "@/components/CardLink";
 
-export default async function DashboardPage({ searchParams }: { searchParams?: { registered?: string; name?: string } }) {
-  const sp = searchParams;
-  const registered = sp?.registered;
-  const rawName = sp?.name;
-  const name = rawName ? decodeURIComponent(rawName) : undefined;
+export default async function DashboardPage({ searchParams }: { searchParams: { registered: string; name: string } }) {
+  const { registered, name } = await searchParams
+  const decodedName = decodeURIComponent(name)
 
   const session = await getServerSession(authOptions);
   if (!session) {
@@ -19,7 +17,7 @@ export default async function DashboardPage({ searchParams }: { searchParams?: {
   return (
     <main className="min-h-screen bg-gray-50 text-gray-900 p-6">
       <div className="max-w-5xl mx-auto space-y-8">
-        {registered && <RegisteredToast name={name} />}
+        {registered && <RegisteredToast name={decodedName} />}
 
         <header className="flex items-center justify-between">
           <div>
